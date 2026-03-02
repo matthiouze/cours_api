@@ -1,0 +1,52 @@
+services:
+  # Serveur Web Apache + PHP
+  web:
+    image: php:8.2-apache
+    container_name: laravel_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./public_html:/var/www/html
+    networks:
+      - dev-network
+
+  # Base de données MySQL
+  db:
+    image: mysql:8.0
+    container_name: laravel_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: ma_base
+      MYSQL_USER: user_laravel
+      MYSQL_PASSWORD: user_password
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    networks:
+      - dev-network
+
+  # Interface phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: laravel_pma
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+    networks:
+      - dev-network
+
+  # Outil Composer
+  composer:
+    image: composer:latest
+    container_name: laravel_composer
+    volumes:
+      - ./public_html:/app
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+    driver: bridge
+
+#chmod -R 755 public
